@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const outputPanel = document.getElementById('output-panel');
     const loadingIndicator = document.getElementById('loading-indicator');
     const codeOutputContainer = document.getElementById('code-output');
-    const copyButton = document.getElementById('copy-button');
 
     // Show/hide language select based on task
     taskSelect.addEventListener('change', () => {
@@ -66,6 +65,50 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    // Función para copiar el contenido de un bloque de código
+    function copyCodeBlock(codeElement, button) {
+        const textToCopy = codeElement.textContent;
+
+        navigator.clipboard.writeText(textToCopy)
+            .then(() => {
+                // Cambiar apariencia del botón para feedback
+                button.classList.add('copied');
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+
+                // Restaurar el botón después de un tiempo
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            })
+            .catch(err => {
+                console.error('Failed to copy text: ', err);
+                alert('Failed to copy to clipboard');
+            });
+    }
+
+    // Añadir botones de copia a cada bloque de código
+    function addCopyButtonsToCodeBlocks() {
+        document.querySelectorAll('#code-output pre').forEach(block => {
+            // Crear el botón de copia
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-code-btn';
+            copyButton.textContent = 'Copy';
+
+            // Posicionar el botón dentro del bloque de código
+            block.appendChild(copyButton);
+
+            // Agregar el evento click para copiar
+            const codeElement = block.querySelector('code');
+            copyButton.addEventListener('click', () => {
+                if (codeElement) {
+                    copyCodeBlock(codeElement, copyButton);
+                }
+            });
+        });
+    }
+
     // Transform button click handler
     transformButton.addEventListener('click', async () => {
         const code = codeInput.value.trim();
@@ -90,7 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingIndicator.classList.add('visible');
         codeOutputContainer.classList.add('loading');
         codeOutputContainer.innerHTML = '';
-        copyButton.disabled = true;
         transformButton.disabled = true;
 
         // Start typing animation
@@ -122,14 +164,41 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.result) {
                 // Add a small delay before showing result (feels more natural)
                 setTimeout(() => {
+                    // Convert markdown to HTML
                     const rawHtml = marked.parse(result.result);
                     codeOutputContainer.innerHTML = rawHtml;
+
+                    // Format code explanation if present
+                    if (taskSelect.value === 'explain') {
+                        enhanceExplanation();
+                    }
+
+                    // Adjust code blocks to remove scrollbars
+                    document.querySelectorAll('#code-output pre').forEach(block => {
+                        block.classList.add('code-block');
+                        // Eliminar cualquier estilo inline que pueda afectar
+                        block.style.overflow = 'visible';
+                        block.style.maxHeight = 'none';
+                        block.style.height = 'auto';
+
+                        // Asegurar que el código dentro también está ajustado
+                        const codeElement = block.querySelector('code');
+                        if (codeElement) {
+                            codeElement.style.overflow = 'visible';
+                            codeElement.style.maxHeight = 'none';
+                            codeElement.style.height = 'auto';
+                        }
+                    });
+
+                    // Añadir botones de copia a todos los bloques de código
+                    addCopyButtonsToCodeBlocks();
+
+                    // Scroll to top of the container
+                    codeOutputContainer.scrollTop = 0;
                 }, 300);
             } else {
                 codeOutputContainer.innerHTML = '<code>// No result received from AI.</code>';
             }
-
-            copyButton.disabled = false;
 
         } catch (error) {
             console.error('Error:', error);
@@ -137,7 +206,6 @@ document.addEventListener('DOMContentLoaded', () => {
             typingAnimation.clear();
             // Display error message wrapped in code tag inside the DIV
             codeOutputContainer.innerHTML = `<code>// Transformation failed:\n\nError: ${error.message}</code>`;
-            copyButton.disabled = true;
         } finally {
             // Always remove the loading class from the DIV container
             codeOutputContainer.classList.remove('loading');
@@ -150,42 +218,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Copy button click handler
-    copyButton.addEventListener('click', () => {
-        // Target the container div for finding code blocks or getting text
-        const codeBlocks = codeOutputContainer.querySelectorAll('pre code');
-        let textToCopy = '';
-        if (codeBlocks.length > 0) {
-            codeBlocks.forEach(block => {
-                // Get the original text content without HTML syntax highlighting
-                textToCopy += block.textContent + '\n\n';
-            });
-            textToCopy = textToCopy.trim();
-        } else {
-            // Fallback to copying the text content of the container DIV
-            textToCopy = codeOutputContainer.textContent;
-        }
+    // Enhance explanation output with structure and classes
+    function enhanceExplanation() {
+        const codeSnippets = codeOutputContainer.querySelectorAll('code:not(pre code)');
+        codeSnippets.forEach(snippet => {
+            // Don't modify code blocks inside pre tags
+            if (snippet.parentElement.tagName !== 'PRE') {
+                const snippetText = snippet.textContent;
+                const explanationText = snippet.nextSibling;
 
-        if (!textToCopy || textToCopy.startsWith('// Transformation failed:')) {
-            return;
-        }
-        navigator.clipboard.writeText(textToCopy)
-            .then(() => {
-                const originalText = copyButton.textContent;
-                copyButton.textContent = 'Copied!';
-                copyButton.style.borderColor = 'var(--success-color, #22c55e)';
-                copyButton.style.color = 'var(--success-color, #22c55e)';
-                setTimeout(() => {
-                    copyButton.textContent = originalText;
-                    copyButton.style.borderColor = '';
-                    copyButton.style.color = '';
-                }, 2000);
-            })
-            .catch(err => {
-                console.error('Failed to copy text: ', err);
-                alert('Failed to copy to clipboard');
-            });
-    });
+                if (explanationText && explanationText.nodeType === Node.TEXT_NODE) {
+                    // Create a container for this snippet-explanation pair
+                    const container = document.createElement('div');
+                    container.className = 'explanation';
+
+                    // Create elements for snippet and explanation
+                    const snippetElement = document.createElement('div');
+                    snippetElement.className = 'code-snippet';
+                    snippetElement.textContent = snippetText;
+
+                    const textElement = document.createElement('div');
+                    textElement.className = 'explanation-text';
+                    textElement.textContent = explanationText.textContent;
+
+                    // Add to container and replace original elements
+                    container.appendChild(snippetElement);
+                    container.appendChild(textElement);
+
+                    // Replace the original nodes with our new container
+                    const parent = snippet.parentNode;
+                    parent.insertBefore(container, snippet);
+                    parent.removeChild(snippet);
+                    parent.removeChild(explanationText);
+                }
+            }
+        });
+    }
 
     // Initialize: Hide language select if the default task is not 'translate'
     if (taskSelect.value !== 'translate') {

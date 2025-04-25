@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,27 +9,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&family=Fira+Code&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&family=Fira+Code&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
     <div id="background-container"></div>
-    
+
     <div class="main-layout">
         <header class="app-header">
             <h1>Code Alchemist</h1>
             <p>AI-Powered Code Transformation</p>
         </header>
-        
+
         <div class="content-area">
             <div class="panel input-panel">
                 <h2>Input Code</h2>
                 <textarea id="code-input" placeholder="// Paste your code here..."></textarea>
             </div>
-            
+
             <div class="panel output-panel" id="output-panel">
                 <div class="panel-header">
                     <h2>AI Result</h2>
-                    <button id="copy-button" disabled title="Copy Result">Copy</button>
                 </div>
                 <div id="loading-indicator" style="display: none;">
                     <div class="spinner"></div>
@@ -37,7 +40,7 @@
                 <div id="code-output"><code>Waiting for input...</code></div>
             </div>
         </div>
-        
+
         <aside class="control-bar">
             <h2>Controls</h2>
             <div class="control-group">
@@ -49,7 +52,7 @@
                     <option value="translate">Translate</option>
                 </select>
             </div>
-            
+
             <div class="control-group language-select-container" style="display: none;">
                 <label for="language-select">Target Language:</label>
                 <select id="language-select">
@@ -65,18 +68,19 @@
                     <option value="Rust">Rust</option>
                 </select>
             </div>
-            
+
             <button id="transform-button">Transform</button>
         </aside>
-        
+
         <footer class="app-footer">
             <p>&copy; Rafael Nieto Soto</p>
         </footer>
     </div>
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="{{ url_for('static', filename='js/ai-background.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
-</html> 
+
+</html>
