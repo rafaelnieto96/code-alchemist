@@ -35,9 +35,9 @@ function drawGradientBackground(c1, c2) {
 }
 
 function draw() {
-    // New color palette - teal/cyan to dark blue
-    let color1 = color(20, 50, 65);
-    let color2 = color(5, 10, 30);
+    // Cyberpunk color palette - dark blue/purple gradient
+    let color1 = color(10, 10, 30); // --dark-bg analogous
+    let color2 = color(26, 26, 62); // --medium-bg analogous
     drawGradientBackground(color1, color2);
 
     neurons.forEach(neuron => {
@@ -57,9 +57,11 @@ class Neuron {
         this.pos = createVector(random(width), random(height));
         this.connections = [];
         this.pulse = 0;
-        const baseSize = window.innerWidth < 768 ? 6 : 8;
-        this.targetSize = random(baseSize, baseSize * 1.8);
-        this.hue = random(160, 200);
+        const baseSize = window.innerWidth < 768 ? 5 : 7; // Slightly smaller nodes
+        this.targetSize = random(baseSize, baseSize * 1.6);
+        // Cyberpunk hues - cyan/magenta range
+        this.hue = random(180, 300); 
+        this.sat = random(180, 255);
     }
 
     update() {
@@ -78,21 +80,27 @@ class Neuron {
 
     activate() {
         this.pulse = 1;
-        this.hue = (this.hue + 1) % 360;
+        this.hue = (this.hue + 2) % 360; // Shift hue slightly on activation
     }
 
     show() {
-        let glowSize = this.targetSize * (1 + this.pulse * 2);
-        let alpha = 150 + 105 * sin(frameCount * 0.1);
+        let glowSize = this.targetSize * (1 + this.pulse * 2.5); // More pronounced pulse
+        let alpha = 180 + 75 * sin(frameCount * 0.05 + this.pos.x * 0.1); // Slower, position-based alpha
+        colorMode(HSB); // Use HSB for easier color manipulation
 
-        fill(this.hue, 220, 255, alpha * 0.5);
+        // Outer Glow
+        fill(this.hue, this.sat, 100, alpha * 0.3 * (1 + this.pulse)); // Brighter glow on pulse
         noStroke();
         ellipse(this.pos.x, this.pos.y, glowSize);
 
-        stroke(this.hue, 220, 255, alpha);
-        strokeWeight(window.innerWidth < 768 ? 1.5 : 2);
-        fill(20, 60, 80);
-        ellipse(this.pos.x, this.pos.y, this.targetSize);
+        // Inner Glow / Core
+        fill(this.hue, this.sat, 100, alpha * 0.6);
+        ellipse(this.pos.x, this.pos.y, this.targetSize * 1.5);
+        
+        // Center Dot
+        fill(this.hue, this.sat * 0.5, 100, 255); // Brighter center
+        ellipse(this.pos.x, this.pos.y, this.targetSize * 0.8);
+        colorMode(RGB); // Switch back to RGB
     }
 }
 
@@ -104,19 +112,23 @@ function drawNeuralConnections() {
             .slice(0, MAX_CONNECTIONS);
 
         others.forEach(({ neuron: b, dist }) => {
-            if (dist < ACTIVATION_DISTANCE * 1.8) {
-                let alpha = map(dist, 0, ACTIVATION_DISTANCE * 1.8, 255, 0);
-                let lineWidth = map(dist, 0, ACTIVATION_DISTANCE * 1.8,
-                    window.innerWidth < 768 ? 2 : 3,
-                    window.innerWidth < 768 ? 0.3 : 0.5);
+            if (dist < ACTIVATION_DISTANCE * 1.5) { // Slightly reduced connection distance
+                let alpha = map(dist, 0, ACTIVATION_DISTANCE * 1.5, 150, 0); // Less intense alpha
+                let lineWidth = map(dist, 0, ACTIVATION_DISTANCE * 1.5,
+                    window.innerWidth < 768 ? 1.5 : 2,
+                    window.innerWidth < 768 ? 0.2 : 0.4);
 
-                let pulseSpeed = window.innerWidth < 768 ? 0.03 : 0.05;
-                let pulse = (sin(frameCount * pulseSpeed + dist * 0.01) + 1) * 0.5;
-                alpha *= pulse;
+                let pulseSpeed = window.innerWidth < 768 ? 0.04 : 0.06;
+                let pulse = (sin(frameCount * pulseSpeed + dist * 0.02) + 1) * 0.5;
+                let connectionAlpha = alpha * (0.5 + pulse * 0.5); // Modulated alpha
 
-                stroke(a.hue, 220, 255, alpha);
+                // Use a mix of primary and secondary colors for connections
+                let connectionHue = lerp(a.hue, b.hue, 0.5);
+                colorMode(HSB);
+                stroke(connectionHue, 200, 100, connectionAlpha);
                 strokeWeight(lineWidth);
                 line(a.pos.x, a.pos.y, b.pos.x, b.pos.y);
+                colorMode(RGB);
             }
         });
     });
@@ -124,9 +136,11 @@ function drawNeuralConnections() {
 
 function globalPulseEffect() {
     noFill();
-    stroke(180, 220, 255, window.innerWidth < 768 ? 40 : 70);
-    strokeWeight(window.innerWidth < 768 ? 1 : 1.5);
-    let pulseSize = (frameCount % 120) * (window.innerWidth < 768 ? 3 : 4);
+    // Cyan/Magenta pulse
+    let pulseColor = lerpColor(color(0, 240, 255, 50), color(255, 0, 255, 50), (sin(frameCount * 0.5) + 1) / 2);
+    stroke(pulseColor);
+    strokeWeight(window.innerWidth < 768 ? 1.5 : 2);
+    let pulseSize = (frameCount % 150) * (window.innerWidth < 768 ? 3 : 5); // Slower, larger pulse
     ellipse(mouseX, mouseY, pulseSize, pulseSize);
 }
 

@@ -3,73 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Alchemist - AI Code Improvement</title>
+    <title>Code Alchemist - AI Code Transformation</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&family=Fira+Code&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="background-container"></div>
     
-    <div class="app-container">
-        <header>
+    <div class="main-layout">
+        <header class="app-header">
             <h1>Code Alchemist</h1>
-            <p>Transform your code with AI-powered improvements</p>
+            <p>AI-Powered Code Transformation</p>
         </header>
         
-        <main>
-            <div class="code-container">
-                <div class="input-section">
-                    <h2>Your Code</h2>
-                    <textarea id="code-input" placeholder="Paste your code here..."></textarea>
-                    
-                    <div class="options">
-                        <div class="option-group">
-                            <label for="task-select">Task:</label>
-                            <select id="task-select">
-                                <option value="improve">Improve Code</option>
-                                <option value="debug">Find & Fix Bugs</option>
-                                <option value="explain">Explain Code</option>
-                                <option value="translate">Translate</option>
-                            </select>
-                        </div>
-                        
-                        <div class="option-group language-select-container" style="display: none;">
-                            <label for="language-select">Target Language:</label>
-                            <select id="language-select">
-                                <option value="Python">Python</option>
-                                <option value="JavaScript">JavaScript</option>
-                                <option value="Java">Java</option>
-                                <option value="C++">C++</option>
-                                <option value="C#">C#</option>
-                                <option value="Go">Go</option>
-                                <option value="Ruby">Ruby</option>
-                                <option value="PHP">PHP</option>
-                                <option value="Swift">Swift</option>
-                                <option value="Rust">Rust</option>
-                            </select>
-                        </div>
-                        
-                        <button id="transform-button">Transform</button>
-                    </div>
-                </div>
-                
-                <div class="output-section">
-                    <h2>AI Result</h2>
-                    <div id="loading-indicator" style="display: none;">
-                        <div class="spinner"></div>
-                        <p>The AI is working on your code...</p>
-                    </div>
-                    <pre id="code-output"><code>Results will appear here...</code></pre>
-                    <button id="copy-button" disabled>Copy Result</button>
-                </div>
+        <div class="content-area">
+            <div class="panel input-panel">
+                <h2>Input Code</h2>
+                <textarea id="code-input" placeholder="// Paste your code here..."></textarea>
             </div>
-        </main>
+            
+            <div class="panel output-panel" id="output-panel">
+                <div class="panel-header">
+                    <h2>AI Result</h2>
+                    <button id="copy-button" disabled title="Copy Result">Copy</button>
+                </div>
+                <div id="loading-indicator" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Alchemizing Code...</p>
+                </div>
+                <div id="code-output"><code>Waiting for input...</code></div>
+            </div>
+        </div>
         
-        <footer>
-            <p>Powered by Cohere AI | <a href="https://github.com/yourusername/code-alchemist" target="_blank">GitHub</a></p>
+        <aside class="control-bar">
+            <h2>Controls</h2>
+            <div class="control-group">
+                <label for="task-select">Task:</label>
+                <select id="task-select">
+                    <option value="improve">Improve</option>
+                    <option value="debug">Debug</option>
+                    <option value="explain">Explain</option>
+                    <option value="translate">Translate</option>
+                </select>
+            </div>
+            
+            <div class="control-group language-select-container" style="display: none;">
+                <label for="language-select">Target Language:</label>
+                <select id="language-select">
+                    <option value="Python">Python</option>
+                    <option value="JavaScript">JavaScript</option>
+                    <option value="Java">Java</option>
+                    <option value="C++">C++</option>
+                    <option value="C#">C#</option>
+                    <option value="Go">Go</option>
+                    <option value="Ruby">Ruby</option>
+                    <option value="PHP">PHP</option>
+                    <option value="Swift">Swift</option>
+                    <option value="Rust">Rust</option>
+                </select>
+            </div>
+            
+            <button id="transform-button">Transform</button>
+        </aside>
+        
+        <footer class="app-footer">
+            <p>&copy; Rafael Nieto Soto</p>
         </footer>
     </div>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="{{ url_for('static', filename='js/ai-background.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>

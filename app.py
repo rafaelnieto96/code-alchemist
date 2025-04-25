@@ -30,17 +30,20 @@ def improve_code():
     task = data.get('task', 'improve')  # Options: improve, translate, debug, explain
     language = data.get('language', '')
     
+    # Define base instruction for Markdown output
+    markdown_instruction = "Format your response using Markdown. Use appropriate headings (like ## Title) for sections."
+
     # Create the prompt based on the task
     if task == 'improve':
-        prompt = f"Improve the following code to make it more efficient and readable:\n\n```\n{code}\n```"
+        prompt = f"{markdown_instruction}\n\n## Analysis\nAnalyze the following code and provide suggestions for improvement regarding efficiency, readability, and best practices.\n\n```\n{code}\n```\n\n## Improved Code\nProvide the improved version of the code below:"
     elif task == 'translate' and language:
-        prompt = f"Translate the following code to {language}:\n\n```\n{code}\n```"
+        prompt = f"{markdown_instruction}\n\n## Original Code\n```\n{code}\n```\n\n## Translation to {language}\nTranslate the code above to {language} and provide the result below:"
     elif task == 'debug':
-        prompt = f"Find and fix bugs in the following code:\n\n```\n{code}\n```"
+        prompt = f"{markdown_instruction}\n\n## Code Analysis\nAnalyze the following code for bugs, potential errors, and vulnerabilities.\n\n```\n{code}\n```\n\n## Debugged Code\nProvide the corrected code (if bugs were found) or confirm it looks okay:"
     elif task == 'explain':
-        prompt = f"Explain the following code in detail:\n\n```\n{code}\n```"
-    else:
-        prompt = f"Analyze the following code:\n\n```\n{code}\n```"
+        prompt = f"{markdown_instruction}\n\n## Code Snippet\n```\n{code}\n```\n\n## Explanation\nExplain the functionality, logic, and key parts of the code above in detail:"
+    else: # Default fallback if task is unknown
+        prompt = f"{markdown_instruction}\n\n## Code Analysis\nAnalyze the following code:\n\n```\n{code}\n```\n\n## Result\nProvide the analysis result below:"
     
     try:
         # Generate response from Cohere
