@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Alchemist - AI Code Improvement</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+</head>
+<body>
+    <div id="background-container"></div>
+    
+    <div class="app-container">
+        <header>
+            <h1>Code Alchemist</h1>
+            <p>Transform your code with AI-powered improvements</p>
+        </header>
+        
+        <main>
+            <div class="code-container">
+                <div class="input-section">
+                    <h2>Your Code</h2>
+                    <textarea id="code-input" placeholder="Paste your code here..."></textarea>
+                    
+                    <div class="options">
+                        <div class="option-group">
+                            <label for="task-select">Task:</label>
+                            <select id="task-select">
+                                <option value="improve">Improve Code</option>
+                                <option value="debug">Find & Fix Bugs</option>
+                                <option value="explain">Explain Code</option>
+                                <option value="translate">Translate</option>
+                            </select>
+                        </div>
+                        
+                        <div class="option-group language-select-container" style="display: none;">
+                            <label for="language-select">Target Language:</label>
+                            <select id="language-select">
+                                <option value="Python">Python</option>
+                                <option value="JavaScript">JavaScript</option>
+                                <option value="Java">Java</option>
+                                <option value="C++">C++</option>
+                                <option value="C#">C#</option>
+                                <option value="Go">Go</option>
+                                <option value="Ruby">Ruby</option>
+                                <option value="PHP">PHP</option>
+                                <option value="Swift">Swift</option>
+                                <option value="Rust">Rust</option>
+                            </select>
+                        </div>
+                        
+                        <button id="transform-button">Transform</button>
+                    </div>
+                </div>
+                
+                <div class="output-section">
+                    <h2>AI Result</h2>
+                    <div id="loading-indicator" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>The AI is working on your code...</p>
+                    </div>
+                    <pre id="code-output"><code>Results will appear here...</code></pre>
+                    <button id="copy-button" disabled>Copy Result</button>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>Powered by Cohere AI | <a href="https://github.com/yourusername/code-alchemist" target="_blank">GitHub</a></p>
+        </footer>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/ai-background.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html> 
