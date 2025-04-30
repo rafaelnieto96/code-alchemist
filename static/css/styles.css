@@ -265,9 +265,9 @@ textarea::placeholder {
     background-color: var(--secondary-color);
 }
 
-/* Bloques de código: sin scroll interno */
+/* Bloques de código con fondo más claro */
 #code-output pre {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(40, 40, 80, 0.6); /* Fondo aún más claro para distinguir mejor el código */
     border-left: 3px solid var(--primary-color);
     padding: 0.8rem;
     margin: 0.8rem 0;
@@ -420,6 +420,47 @@ textarea::placeholder {
     font-family: 'Rajdhani', sans-serif;
     transition: all 0.2s ease;
     outline: none;
+    appearance: none; /* Remove default appearance */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300f0ff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.6%205.4-7.9%205.4-12.9%200-5-1.9-9.2-5.5-12.7z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem top 50%;
+    background-size: 0.65rem auto;
+    padding-right: 1.8rem; /* Space for the arrow */
+}
+
+/* Specific style for the task selector */
+.control-bar select#task {
+    background-color: var(--dark-bg);
+    border: 1px solid var(--primary-color);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+    color: var(--primary-color);
+    font-family: var(--font-code);
+    font-weight: 500;
+}
+
+/* Task selector dropdown container */
+.control-bar select#task option {
+    background-color: var(--dark-bg);
+    color: var(--text-color);
+    padding: 10px 15px;
+    font-family: var(--font-code);
+    border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+}
+
+/* Active/selected option */
+.control-bar select#task option:checked {
+    background-color: var(--primary-color);
+    color: var(--dark-bg);
+    font-weight: bold;
+}
+
+/* Hover style for options */
+.control-bar select#task option:hover {
+    background-color: var(--primary-color);
+    color: var(--dark-bg);
+    cursor: pointer;
 }
 
 .control-bar select:hover {
@@ -749,8 +790,7 @@ div#code-output.loading::before {
 }
 
 .typing-effect {
-    border-right: 2px solid var(--primary-color);
-    animation: blink-caret 0.75s step-end infinite;
+    border-right: none; /* Removing the blinking cursor */
     white-space: pre-wrap;
     overflow: visible;
     color: var(--primary-color);
@@ -817,3 +857,115 @@ div#code-output.loading::before {
     color: #22c55e;
     border-color: #22c55e;
 }
+
+/* Estilos para el select personalizado */
+.custom-select-wrapper {
+    position: relative;
+    user-select: none;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.custom-select {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.custom-select-trigger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+    font-family: var(--font-code);
+    color: var(--primary-color);
+    background-color: var(--dark-bg);
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+.custom-select-trigger:hover {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 12px rgba(255, 0, 255, 0.4);
+}
+
+/* Arreglo para el triangulito del selector */
+/* Arreglo mejorado para el triangulito del selector */
+.custom-select-trigger:after {
+    content: '';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    width: 8px;
+    height: 8px; 
+    border-right: 2px solid var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    /* Usar transform-origin para mantener el centro durante la rotación */
+    transform-origin: center;
+    transform: translateY(-4px) rotate(45deg);
+    transition: transform 0.3s ease;
+}
+
+.custom-select.opened .custom-select-trigger:after {
+    /* Mantener el mismo centro visual aplicando la misma traslación */
+    transform: translateY(-4px) rotate(-135deg);
+}
+
+.custom-options {
+    position: absolute;
+    display: block;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--dark-bg);
+    border: 1px solid var(--primary-color);
+    border-top: 0;
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+    transition: all 0.2s ease;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 2;
+    box-shadow: 0 5px 15px rgba(0, 240, 255, 0.2);
+    transform: translateY(-10px);
+}
+
+.custom-select.opened .custom-options {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+    transform: translateY(0);
+}
+
+.custom-option {
+    position: relative;
+    display: block;
+    padding: 12px 15px;
+    font-size: 0.9rem;
+    font-family: var(--font-code);
+    color: var(--text-color);
+    cursor: pointer;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+    transition: all 0.2s ease;
+}
+
+.custom-option:last-of-type {
+    border-bottom: 0;
+}
+
+.custom-option:hover {
+    background-color: var(--primary-color);
+    color: var(--dark-bg);
+}
+
+.custom-option.selection {
+    background-color: rgba(0, 120, 255, 0.3); /* Tono más azul eléctrico */
+    color: var(--primary-color);
+    border-left: 3px solid var(--primary-color);
+}
+
