@@ -65,18 +65,18 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Función para copiar el contenido de un bloque de código
+    // Function to copy code block content
     function copyCodeBlock(codeElement, button) {
         const textToCopy = codeElement.textContent;
 
         navigator.clipboard.writeText(textToCopy)
             .then(() => {
-                // Cambiar apariencia del botón para feedback
+                // Change button appearance for feedback
                 button.classList.add('copied');
                 const originalText = button.textContent;
                 button.textContent = 'Copied!';
 
-                // Restaurar el botón después de un tiempo
+                // Restore button after a delay
                 setTimeout(() => {
                     button.textContent = originalText;
                     button.classList.remove('copied');
@@ -88,28 +88,28 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
-    // Añadir botones de copia a cada bloque de código
+    // Add copy buttons to each code block
     function addCopyButtonsToCodeBlocks() {
         document.querySelectorAll('#code-output pre').forEach(block => {
             const codeElement = block.querySelector('code');
-            
-            // Solo agregar botón si contiene código real (no solo texto explicativo)
+
+            // Only add button if it contains actual code (not just text)
             if (codeElement && codeElement.textContent.trim().length > 0) {
-                // Verificar si el contenido parece código (contiene caracteres especiales, palabras clave, etc.)
+                // Check if content looks like code (contains special characters, keywords, etc)
                 const content = codeElement.textContent;
-                const hasCodeSyntax = /[{}\[\]()=;:<>\/\\.|&!*+\-#@]/.test(content) || 
-                                     /\b(function|var|let|const|if|else|for|while|class|import|export|return)\b/.test(content);
-                
+                const hasCodeSyntax = /[{}\[\]()=;:<>\/\\.|&!*+\-#@]/.test(content) ||
+                    /\b(function|var|let|const|if|else|for|while|class|import|export|return)\b/.test(content);
+
                 if (hasCodeSyntax) {
-                    // Crear el botón de copia
+                    // Create copy button
                     const copyButton = document.createElement('button');
                     copyButton.className = 'copy-code-btn';
                     copyButton.textContent = 'Copy';
 
-                    // Posicionar el botón dentro del bloque de código
+                    // Position button inside code block
                     block.appendChild(copyButton);
 
-                    // Agregar el evento click para copiar
+                    // Add click event to copy
                     copyButton.addEventListener('click', () => {
                         copyCodeBlock(codeElement, copyButton);
                     });
@@ -127,7 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Prepare data
         const data = {
             code: code,
             task: taskSelect.value
@@ -137,14 +136,12 @@ document.addEventListener('DOMContentLoaded', () => {
             data.language = languageSelect.value;
         }
 
-        // Show loading indicator and prepare output panel
         outputPanel.classList.add('visible');
         loadingIndicator.classList.add('visible');
         codeOutputContainer.classList.add('loading');
         codeOutputContainer.innerHTML = '';
         transformButton.disabled = true;
 
-        // Start typing animation
         const typingAnimation = startTypingAnimation();
 
         try {
@@ -157,40 +154,31 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const result = await response.json();
-
-            // Clear typing animation
             typingAnimation.clear();
 
             if (!response.ok) {
-                throw new Error(result.error || `Server error (${response.status})`);
+                throw new Error(result.error || `Service unavailable. Please try again later.`);
             }
 
             if (result.error) {
                 throw new Error(result.error);
             }
 
-            // Parse Markdown response and render as HTML into the DIV
             if (result.result) {
-                // Add a small delay before showing result (feels more natural)
                 setTimeout(() => {
-                    // Convert markdown to HTML
                     const rawHtml = marked.parse(result.result);
                     codeOutputContainer.innerHTML = rawHtml;
 
-                    // Format code explanation if present
                     if (taskSelect.value === 'explain') {
                         enhanceExplanation();
                     }
 
-                    // Adjust code blocks to remove scrollbars
                     document.querySelectorAll('#code-output pre').forEach(block => {
                         block.classList.add('code-block');
-                        // Eliminar cualquier estilo inline que pueda afectar
                         block.style.overflow = 'visible';
                         block.style.maxHeight = 'none';
                         block.style.height = 'auto';
 
-                        // Asegurar que el código dentro también está ajustado
                         const codeElement = block.querySelector('code');
                         if (codeElement) {
                             codeElement.style.overflow = 'visible';
@@ -199,10 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     });
 
-                    // Añadir botones de copia a todos los bloques de código
                     addCopyButtonsToCodeBlocks();
-
-                    // Scroll to top of the container
                     codeOutputContainer.scrollTop = 0;
                 }, 300);
             } else {
@@ -211,15 +196,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error('Error:', error);
-            // Clear typing animation
             typingAnimation.clear();
-            // Display error message wrapped in code tag inside the DIV
-            codeOutputContainer.innerHTML = `<code>// Transformation failed:\n\nError: ${error.message}</code>`;
+
+            codeOutputContainer.innerHTML = `<div class="error-message">
+     <code>// Oops! Something went wrong.
+  
+ Sorry about that! It seems we encountered an issue while transforming your code. Please try again later or try with a different code snippet.</code>
+ </div>`
         } finally {
-            // Always remove the loading class from the DIV container
             codeOutputContainer.classList.remove('loading');
 
-            // Hide loading indicator overlay
             setTimeout(() => {
                 loadingIndicator.classList.remove('visible');
             }, 200);
@@ -229,37 +215,107 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Enhance explanation output with structure and classes
     function enhanceExplanation() {
+        // Handle code elements in paragraphs and other inline contexts
         const codeSnippets = codeOutputContainer.querySelectorAll('code:not(pre code)');
         codeSnippets.forEach(snippet => {
-            // Don't modify code blocks inside pre tags
             if (snippet.parentElement.tagName !== 'PRE') {
-                const snippetText = snippet.textContent;
+                const snippetText = snippet.textContent.trim();
                 const explanationText = snippet.nextSibling;
 
                 if (explanationText && explanationText.nodeType === Node.TEXT_NODE) {
-                    // Create a container for this snippet-explanation pair
                     const container = document.createElement('div');
                     container.className = 'explanation';
 
-                    // Create elements for snippet and explanation
                     const snippetElement = document.createElement('div');
                     snippetElement.className = 'code-snippet';
                     snippetElement.textContent = snippetText;
 
                     const textElement = document.createElement('div');
                     textElement.className = 'explanation-text';
-                    textElement.textContent = explanationText.textContent;
+                    // Trim any whitespace from the explanation text
+                    textElement.textContent = explanationText.textContent.replace(/^\s+/, '').trim();
 
-                    // Add to container and replace original elements
                     container.appendChild(snippetElement);
                     container.appendChild(textElement);
 
-                    // Replace the original nodes with our new container
                     const parent = snippet.parentNode;
                     parent.insertBefore(container, snippet);
                     parent.removeChild(snippet);
                     parent.removeChild(explanationText);
                 }
+            }
+        });
+
+        // Special handling for list items containing code elements
+        document.querySelectorAll('#code-output li').forEach(li => {
+            const codeElement = li.querySelector('code:not(pre code)');
+            if (codeElement && li.childNodes.length > 1) {
+                // There's a code element and other content in this list item
+                const snippetText = codeElement.textContent.trim();
+                
+                // Get all text after the code element
+                let explanationText = '';
+                let foundCode = false;
+                let nodesToRemove = [];
+                
+                li.childNodes.forEach(node => {
+                    if (foundCode && node.nodeType === Node.TEXT_NODE) {
+                        explanationText += node.textContent;
+                        nodesToRemove.push(node);
+                    }
+                    if (node === codeElement) {
+                        foundCode = true;
+                        nodesToRemove.push(node);
+                    }
+                });
+                
+                if (explanationText.trim()) {
+                    const container = document.createElement('div');
+                    container.className = 'explanation';
+
+                    const snippetElement = document.createElement('div');
+                    snippetElement.className = 'code-snippet';
+                    snippetElement.textContent = snippetText;
+
+                    const textElement = document.createElement('div');
+                    textElement.className = 'explanation-text';
+                    textElement.textContent = explanationText.replace(/^\s+/, '').trim();
+
+                    // Remove the nodes we processed
+                    nodesToRemove.forEach(node => li.removeChild(node));
+                    
+                    // Add the elements to the container
+                    container.appendChild(snippetElement);
+                    container.appendChild(textElement);
+                    
+                    // Insert our structured explanation
+                    li.appendChild(container);
+                }
+            }
+        });
+        
+        // Clean up any empty text nodes in the output
+        cleanupWhitespace(codeOutputContainer);
+    }
+
+    // Helper function to remove unnecessary whitespace nodes
+    function cleanupWhitespace(element) {
+        const treeWalker = document.createTreeWalker(
+            element,
+            NodeFilter.SHOW_TEXT,
+            { acceptNode: node => /^\s*$/.test(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT }
+        );
+        
+        const nodesToRemove = [];
+        let currentNode;
+        
+        while (currentNode = treeWalker.nextNode()) {
+            nodesToRemove.push(currentNode);
+        }
+        
+        nodesToRemove.forEach(node => {
+            if (node.parentNode) {
+                node.parentNode.removeChild(node);
             }
         });
     }
@@ -268,79 +324,65 @@ document.addEventListener('DOMContentLoaded', () => {
     if (taskSelect.value !== 'translate') {
         languageSelectContainer.style.display = 'none';
     }
-    
-    // Aplicar estilos personalizados al selector y opciones
-    // Ya que las opciones del selector son difíciles de estilizar con CSS puro
-    taskSelect.addEventListener('mouseover', function() {
+
+    taskSelect.addEventListener('mouseover', function () {
         this.style.cursor = 'pointer';
     });
-    
+
     // Function to create custom select
     function createCustomSelect(originalSelect, wrapperClass = '') {
         const selectLabel = document.querySelector(`label[for="${originalSelect.id}"]`);
         const selectContainer = selectLabel.parentElement;
-        
-        // Create a div that acts as the custom select
+
         const customSelect = document.createElement('div');
         customSelect.className = 'custom-select-wrapper ' + wrapperClass;
         customSelect.innerHTML = `
             <div class="custom-select">
                 <div class="custom-select-trigger">${originalSelect.options[originalSelect.selectedIndex].text}</div>
                 <div class="custom-options">
-                    ${Array.from(originalSelect.options).map(option => 
-                        `<span class="custom-option ${option.selected ? 'selection' : ''}" data-value="${option.value}">${option.text}</span>`
-                    ).join('')}
+                    ${Array.from(originalSelect.options).map(option =>
+            `<span class="custom-option ${option.selected ? 'selection' : ''}" data-value="${option.value}">${option.text}</span>`
+        ).join('')}
                 </div>
             </div>
         `;
-        
-        // Hide the original select but keep it in the DOM for the form
+
         originalSelect.style.display = 'none';
         selectContainer.insertBefore(customSelect, originalSelect.nextSibling);
-        
-        // Handle interaction with the custom select
+
         const customSelectTrigger = customSelect.querySelector('.custom-select-trigger');
         const customOptions = customSelect.querySelector('.custom-options');
         const customOptionElements = customSelect.querySelectorAll('.custom-option');
-        
-        // Open/close the dropdown
-        customSelectTrigger.addEventListener('click', function() {
+
+        customSelectTrigger.addEventListener('click', function () {
             this.parentNode.classList.toggle('opened');
         });
-        
-        // Handle option selection
+
         customOptionElements.forEach(option => {
-            option.addEventListener('click', function() {
-                // Update the visible text
+            option.addEventListener('click', function () {
                 customSelectTrigger.textContent = this.textContent;
-                
-                // Update the original select
+
                 originalSelect.value = this.getAttribute('data-value');
-                
-                // Trigger the change event so it behaves like the original select
+
                 const changeEvent = new Event('change');
                 originalSelect.dispatchEvent(changeEvent);
-                
-                // Update the selection class
+
                 customSelect.querySelector('.custom-option.selection')?.classList.remove('selection');
                 this.classList.add('selection');
-                
-                // Close the dropdown
+
                 this.closest('.custom-select').classList.remove('opened');
             });
         });
-        
-        // Close the dropdown if clicking outside
-        document.addEventListener('click', function(e) {
+
+        document.addEventListener('click', function (e) {
             if (!customSelect.contains(e.target)) {
                 customSelect.querySelector('.custom-select').classList.remove('opened');
             }
         });
-        
+
         return customSelect;
     }
-    
-    // Initialize custom selects for both dropdowns
+
     createCustomSelect(taskSelect, 'task-select-wrapper');
     createCustomSelect(languageSelect, 'language-select-wrapper');
 }); 

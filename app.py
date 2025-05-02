@@ -2,6 +2,17 @@ from flask import Flask, request, jsonify, render_template
 import cohere
 import os
 from dotenv import load_dotenv
+import logging
+import traceback
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    filename='code_alchemist.log',
+    filemode='a'
+)
+logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
@@ -271,11 +282,12 @@ def index():
 @app.route('/api/improve_code', methods=['POST'])
 def improve_code():
     if not co:
-        return jsonify({"error": "Cohere API client not initialized"}), 500
+        logger.error("Cohere API client not initialized")
+        return jsonify({"error": "Service temporarily unavailable. Please try again later."}), 500
     
     data = request.json
     code = data.get('code', '')
-    task = data.get('task', 'improve')  # Options: improve, translate, debug, explain
+    task = data.get('task', 'improve')
     language = data.get('language', '')
     
     # Select and fill the appropriate prompt template
@@ -302,7 +314,12 @@ def improve_code():
         )
         return jsonify({"result": response.generations[0].text})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        # Log the detailed error
+        logger.error(f"Error in API call: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        
+        # Return a generic error message to the client
+        return jsonify({"error": "We couldn't process your request. The error has been logged and we're working on it."}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)

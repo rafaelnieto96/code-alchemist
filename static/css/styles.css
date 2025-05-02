@@ -1,25 +1,15 @@
-/* Global Styles - Cyberpunk Theme */
 :root {
     --primary-color: #00f0ff;
-    /* Bright Cyan */
     --secondary-color: #ff00ff;
-    /* Bright Magenta */
     --accent-color: #faff00;
-    /* Bright Yellow */
-    --dark-bg: #0a0a1e;
-    /* Very Dark Blue */
-    --medium-bg: #1a1a3e;
-    /* Dark Blue/Purple */
-    --light-bg: #2a2a5e;
-    /* Lighter Blue/Purple */
-    --panel-bg: rgba(16, 16, 40, 0.85);
-    /* Slightly darker panel BG */
-    --text-color: #e0e0ff;
-    /* Light Lavender */
-    --border-color: rgba(0, 240, 255, 0.3);
-    /* Cyan Border */
+    --dark-bg: rgba(10, 15, 35, 0.6);
+    --medium-bg: rgba(23, 23, 66, 0.7);
+    --light-bg: rgba(35, 35, 80, 0.6);
+    --panel-bg: rgba(25, 25, 60, 0.6);
+    --text-color: #ffffff;
+    --border-color: rgba(0, 240, 255, 0.5);
     --border-radius: 6px;
-    --box-shadow: 0 0 20px rgba(0, 240, 255, 0.15), 0 0 8px rgba(255, 0, 255, 0.1);
+    --box-shadow: 0 0 25px rgba(0, 240, 255, 0.2), 0 0 10px rgba(255, 0, 255, 0.15);
     --font-primary: 'Orbitron', 'Rajdhani', sans-serif;
     --font-code: 'Fira Code', 'Source Code Pro', monospace;
     --control-bar-width: 280px;
@@ -27,7 +17,6 @@
     --footer-height: 60px;
 }
 
-/* Import Fonts (Ensure loaded in HTML too) */
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&family=Fira+Code&display=swap');
 
 * {
@@ -42,28 +31,27 @@ html {
     height: 100%;
     width: 100%;
     overflow: hidden;
-    /* Prevent body scroll */
     color: var(--text-color);
-    background-color: var(--dark-bg);
+    background-color: transparent;
     font-size: 16px;
+    position: relative;
 }
 
 body {
     position: relative;
 }
 
-#background-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    opacity: 0.6;
-    /* Dim background slightly more */
+canvas {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none;
+    z-index: -1 !important;
+    display: block !important;
 }
 
-/* Main Layout using CSS Grid */
 .main-layout {
     display: grid;
     grid-template-columns: 1fr var(--control-bar-width);
@@ -80,21 +68,22 @@ body {
     grid-area: header;
     display: flex;
     flex-direction: column;
-    /* Stack title and subtitle */
     align-items: center;
     justify-content: center;
     padding: 0 2rem;
-    background: linear-gradient(to bottom, rgba(10, 10, 30, 0.9), rgba(10, 10, 30, 0.7));
+    background: linear-gradient(to bottom, rgba(25, 25, 60, 0.8), rgba(25, 25, 60, 0.7));
     border-bottom: 1px solid var(--border-color);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     z-index: 10;
+    box-shadow: 0 2px 15px rgba(0, 240, 255, 0.1);
 }
 
 .app-header h1 {
     font-family: var(--font-primary);
     font-size: 2.5rem;
-    /* Adjusted size */
     color: var(--primary-color);
-    text-shadow: 0 0 10px var(--primary-color), 0 0 5px rgba(255, 255, 255, 0.5);
+    text-shadow: 0 0 15px var(--primary-color), 0 0 8px rgba(255, 255, 255, 0.7);
     letter-spacing: 2px;
     margin: 0;
 }
@@ -104,18 +93,14 @@ body {
     opacity: 0.8;
     color: var(--text-color);
     margin-top: 5px;
-    /* Space between title and subtitle */
 }
 
 .content-area {
     grid-area: content;
     position: relative;
-    /* For positioning panels */
     overflow: hidden;
-    /* Clip panels */
     padding: 2rem;
     display: flex;
-    /* Use flex for panel arrangement */
     gap: 2rem;
 }
 
@@ -123,30 +108,28 @@ body {
     background-color: var(--panel-bg);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    backdrop-filter: blur(5px);
+    box-shadow: var(--box-shadow), 0 0 30px rgba(0, 240, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    /* Prevent content overflow */
-    transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+    transition: transform 0.5s ease-out, opacity 0.5s ease-out, box-shadow 0.3s ease;
+}
+
+.panel:hover {
+    box-shadow: var(--box-shadow), 0 0 35px rgba(0, 240, 255, 0.2), 0 0 15px rgba(255, 0, 255, 0.1);
 }
 
 .input-panel {
     flex: 1;
-    /* Take available space */
     min-width: 300px;
-    /* Ensure minimum width */
 }
 
 .output-panel {
     flex: 1;
-    /* Take available space */
     min-width: 300px;
-    /* Ensure minimum width */
     position: relative;
-    /* Needed for loading indicator */
-    /* Initially hidden/off-screen (can be adjusted) */
     transform: translateX(105%);
     opacity: 0;
     max-height: calc(100vh - var(--header-height) - var(--footer-height) - 4rem);
@@ -169,7 +152,6 @@ body {
     border-bottom: 1px solid var(--border-color);
     margin: 0;
     background-color: rgba(0, 0, 0, 0.2);
-    /* Slight header bg */
 }
 
 .panel-header {
@@ -177,7 +159,6 @@ body {
     justify-content: space-between;
     align-items: center;
     padding-right: 1rem;
-    /* Space for button */
     background-color: rgba(0, 0, 0, 0.2);
     border-bottom: 1px solid var(--border-color);
 }
@@ -191,9 +172,7 @@ body {
 
 textarea {
     flex-grow: 1;
-    /* Allow text areas to fill space */
     background-color: transparent;
-    /* Panel provides BG */
     border: none;
     color: #f0f0f0;
     font-family: var(--font-code);
@@ -203,13 +182,11 @@ textarea {
     resize: none;
     outline: none;
     min-height: 150px;
-    /* Prevent collapsing */
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--primary-color) rgba(0, 0, 0, 0.2);
 }
 
-/* Estilo para scrollbar en textarea (Chrome, Safari, etc) */
 textarea::-webkit-scrollbar {
     width: 8px;
 }
@@ -234,7 +211,6 @@ textarea::placeholder {
 
 #code-output {
     flex-grow: 1;
-    /* Contenedor principal con scroll */
     overflow-y: auto;
     padding: 0 0.5rem 1rem 0.5rem;
     margin: 0;
@@ -246,7 +222,6 @@ textarea::placeholder {
     scrollbar-color: var(--primary-color) rgba(0, 0, 0, 0.2);
 }
 
-/* Estilo para scrollbar en webkit (Chrome, Safari, etc) */
 #code-output::-webkit-scrollbar {
     width: 8px;
 }
@@ -265,9 +240,8 @@ textarea::placeholder {
     background-color: var(--secondary-color);
 }
 
-/* Bloques de código con fondo más claro */
 #code-output pre {
-    background-color: rgba(40, 40, 80, 0.6); /* Fondo aún más claro para distinguir mejor el código */
+    background-color: rgba(40, 50, 100, 0.6);
     border-left: 3px solid var(--primary-color);
     padding: 0.8rem;
     margin: 0.8rem 0;
@@ -280,6 +254,14 @@ textarea::placeholder {
     width: 100%;
     box-sizing: border-box;
     padding-top: 2rem;
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2), 0 0 15px rgba(0, 240, 255, 0.15);
+    transition: all 0.2s ease;
+}
+
+#code-output pre:hover {
+    background-color: rgba(45, 55, 110, 0.7);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25), 0 0 20px rgba(0, 240, 255, 0.2);
 }
 
 #code-output pre code {
@@ -306,7 +288,6 @@ textarea::placeholder {
     overflow-x: visible;
 }
 
-/* Código inline dentro de párrafos */
 #code-output p code {
     display: inline;
     font-family: var(--font-code);
@@ -323,7 +304,6 @@ textarea::placeholder {
     max-height: none !important;
 }
 
-/* Basic markdown styles for output readability */
 #code-output h1,
 #code-output h2,
 #code-output h3,
@@ -372,16 +352,18 @@ textarea::placeholder {
     text-decoration: underline;
 }
 
-/* Control Bar */
 .control-bar {
     grid-area: controls;
-    background-color: rgba(10, 10, 30, 0.85);
+    background: linear-gradient(to bottom, rgba(25, 25, 60, 0.8), rgba(30, 30, 80, 0.7));
     border-left: 1px solid var(--border-color);
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
     overflow-y: auto;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    box-shadow: inset 2px 0 15px rgba(0, 240, 255, 0.1);
 }
 
 .control-bar h2 {
@@ -420,17 +402,16 @@ textarea::placeholder {
     font-family: 'Rajdhani', sans-serif;
     transition: all 0.2s ease;
     outline: none;
-    appearance: none; /* Remove default appearance */
+    appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300f0ff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.6%205.4-7.9%205.4-12.9%200-5-1.9-9.2-5.5-12.7z%22%2F%3E%3C%2Fsvg%3E");
     background-repeat: no-repeat;
     background-position: right 0.7rem top 50%;
     background-size: 0.65rem auto;
-    padding-right: 1.8rem; /* Space for the arrow */
+    padding-right: 1.8rem;
 }
 
-/* Specific style for the task selector */
 .control-bar select#task {
     background-color: var(--dark-bg);
     border: 1px solid var(--primary-color);
@@ -440,7 +421,6 @@ textarea::placeholder {
     font-weight: 500;
 }
 
-/* Task selector dropdown container */
 .control-bar select#task option {
     background-color: var(--dark-bg);
     color: var(--text-color);
@@ -449,14 +429,12 @@ textarea::placeholder {
     border-bottom: 1px solid rgba(0, 240, 255, 0.2);
 }
 
-/* Active/selected option */
 .control-bar select#task option:checked {
     background-color: var(--primary-color);
     color: var(--dark-bg);
     font-weight: bold;
 }
 
-/* Hover style for options */
 .control-bar select#task option:hover {
     background-color: var(--primary-color);
     color: var(--dark-bg);
@@ -488,7 +466,6 @@ textarea::placeholder {
     font-family: var(--font-primary);
     box-shadow: 0 2px 10px rgba(0, 240, 255, 0.3);
     margin-top: auto;
-    /* Push to bottom */
 }
 
 .control-bar button#transform-button:hover {
@@ -535,22 +512,17 @@ button#copy-button:not(:disabled):hover {
     box-shadow: 0 0 8px var(--primary-color);
 }
 
-/* Loading indicator */
 #loading-indicator {
     position: absolute;
     inset: 0;
-    /* Fill parent */
     display: flex;
-    /* Keep as flex */
     flex-direction: column;
     justify-content: center;
     align-items: center;
     background-color: rgba(16, 16, 40, 0.95);
-    /* Match panel BG but more opaque */
     z-index: 5;
     transition: opacity 0.3s ease;
     border-radius: var(--border-radius);
-    /* Match panel */
     opacity: 0;
     pointer-events: none;
     border: 2px solid transparent;
@@ -632,7 +604,6 @@ button#copy-button:not(:disabled):hover {
     }
 }
 
-/* Footer Styles */
 .app-footer {
     grid-area: footer;
     display: flex;
@@ -641,8 +612,10 @@ button#copy-button:not(:disabled):hover {
     padding: 0 2rem;
     font-size: 0.85rem;
     opacity: 0.7;
-    background-color: rgba(10, 10, 30, 0.8);
+    background: linear-gradient(to top, rgba(25, 25, 60, 0.8), rgba(25, 25, 60, 0.7));
     border-top: 1px solid var(--border-color);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     z-index: 10;
 }
 
@@ -658,7 +631,6 @@ button#copy-button:not(:disabled):hover {
     text-shadow: 0 0 5px var(--secondary-color);
 }
 
-/* Responsive Adjustments */
 @media (max-width: 1024px) {
     :root {
         --control-bar-width: 220px;
@@ -677,16 +649,13 @@ button#copy-button:not(:disabled):hover {
 @media (max-width: 768px) {
     .main-layout {
         grid-template-columns: 1fr;
-        /* Single column */
         grid-template-rows: auto auto 1fr auto;
-        /* Header, Controls, Content, Footer */
         grid-template-areas:
             "header"
             "controls"
             "content"
             "footer";
         overflow-y: auto;
-        /* Allow scrolling on mobile */
     }
 
     .app-header {
@@ -706,7 +675,6 @@ button#copy-button:not(:disabled):hover {
         border-left: none;
         border-bottom: 1px solid var(--border-color);
         flex-direction: row;
-        /* Horizontal controls */
         flex-wrap: wrap;
         align-items: center;
         justify-content: center;
@@ -716,33 +684,27 @@ button#copy-button:not(:disabled):hover {
 
     .control-bar h2 {
         display: none;
-        /* Hide title on mobile */
     }
 
     .control-bar .control-group {
         flex-basis: auto;
-        /* Allow groups to wrap */
         flex-grow: 1;
     }
 
     .control-bar button#transform-button {
         margin-top: 0;
         flex-basis: 100%;
-        /* Full width button */
         margin-top: 0.5rem;
-        /* Add some space */
     }
 
     .content-area {
         flex-direction: column;
-        /* Stack panels */
         padding: 1rem;
         gap: 1rem;
     }
 
     .output-panel {
         transform: translateY(105%);
-        /* Slide from bottom */
         opacity: 0;
     }
 
@@ -774,8 +736,6 @@ div#code-output.loading::before {
     background-size: 200% 100%;
     animation: skeleton-shine 1.5s linear infinite;
     z-index: 1;
-    /* Below loading indicator overlay */
-    /* Ensure border radius matches parent */
     border-radius: 0 0 var(--border-radius) var(--border-radius);
 }
 
@@ -790,7 +750,7 @@ div#code-output.loading::before {
 }
 
 .typing-effect {
-    border-right: none; /* Removing the blinking cursor */
+    border-right: none;
     white-space: pre-wrap;
     overflow: visible;
     color: var(--primary-color);
@@ -813,21 +773,31 @@ div#code-output.loading::before {
     }
 }
 
-/* Estilo para los resultados de explicación */
 #code-output .explanation {
-    display: grid;
-    grid-template-columns: 1fr 3fr;
+    display: flex;
     margin-bottom: 0.5rem;
-    gap: 1rem;
+    align-items: baseline;
+    width: 100%;
 }
 
 #code-output .code-snippet {
     font-weight: bold;
     color: var(--accent-color);
+    white-space: nowrap;
+    margin-right: 0.5rem;
+    flex-shrink: 0;
 }
 
 #code-output .explanation-text {
     color: var(--text-color);
+    flex-grow: 1;
+    min-width: 0;
+}
+
+/* Special styling for list items with explanations */
+#code-output li .explanation {
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
 }
 
 .copy-code-btn {
@@ -858,7 +828,6 @@ div#code-output.loading::before {
     border-color: #22c55e;
 }
 
-/* Estilos para el select personalizado */
 .custom-select-wrapper {
     position: relative;
     user-select: none;
@@ -893,25 +862,21 @@ div#code-output.loading::before {
     box-shadow: 0 0 12px rgba(255, 0, 255, 0.4);
 }
 
-/* Arreglo para el triangulito del selector */
-/* Arreglo mejorado para el triangulito del selector */
 .custom-select-trigger:after {
     content: '';
     position: absolute;
     right: 15px;
     top: 50%;
     width: 8px;
-    height: 8px; 
+    height: 8px;
     border-right: 2px solid var(--primary-color);
     border-bottom: 2px solid var(--primary-color);
-    /* Usar transform-origin para mantener el centro durante la rotación */
     transform-origin: center;
     transform: translateY(-4px) rotate(45deg);
     transition: transform 0.3s ease;
 }
 
 .custom-select.opened .custom-select-trigger:after {
-    /* Mantener el mismo centro visual aplicando la misma traslación */
     transform: translateY(-4px) rotate(-135deg);
 }
 
@@ -964,8 +929,23 @@ div#code-output.loading::before {
 }
 
 .custom-option.selection {
-    background-color: rgba(0, 120, 255, 0.3); /* Tono más azul eléctrico */
+    background-color: rgba(0, 120, 255, 0.3);
     color: var(--primary-color);
     border-left: 3px solid var(--primary-color);
 }
 
+.error-message {
+    margin: 20px;
+    padding: 15px;
+    background-color: rgba(220, 53, 69, 0.1);
+    border-left: 4px solid #dc3545;
+    border-radius: 4px;
+}
+
+.error-message code {
+    color: #e74c3c;
+    background: transparent;
+    font-size: 1rem;
+    display: block;
+    line-height: 1.6;
+}
