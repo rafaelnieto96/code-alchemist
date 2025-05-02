@@ -794,7 +794,6 @@ div#code-output.loading::before {
     min-width: 0;
 }
 
-/* Special styling for list items with explanations */
 #code-output li .explanation {
     margin-top: 0.2rem;
     margin-bottom: 0.2rem;
