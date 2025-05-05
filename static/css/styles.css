@@ -723,6 +723,25 @@ button#copy-button:not(:disabled):hover {
         padding: 0.8rem 1rem;
         font-size: 0.8rem;
     }
+
+    .control-bar select {
+        background-color: rgba(10, 15, 35, 0.95);
+    }
+
+    .control-bar select option {
+        background-color: rgba(10, 15, 35, 0.95);
+    }
+
+    .custom-options {
+        max-height: 250px;
+        overflow-y: auto;
+        background-color: rgba(10, 15, 35, 0.95);
+        backdrop-filter: blur(10px);
+    }
+
+    .custom-option {
+        background-color: rgba(25, 25, 60, 0.95);
+    }
 }
 
 div#code-output.loading::before {
@@ -897,6 +916,8 @@ div#code-output.loading::before {
     z-index: 2;
     box-shadow: 0 5px 15px rgba(0, 240, 255, 0.2);
     transform: translateY(-10px);
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 .custom-select.opened .custom-options {
